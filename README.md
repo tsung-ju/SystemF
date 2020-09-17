@@ -1,2 +1,2 @@
 # SystemF
-A formalization of System F and Brown-Palsberg self-interpreter
+An Agda formalization of System F and the Brown-Palsberg self-interpreter
