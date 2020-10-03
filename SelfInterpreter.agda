@@ -181,7 +181,14 @@ normal-`quote M = ″ (ƛ normal-`prequote M)
   ∎
 
 `id₂-∙-· : ∀ {Δ Γ} → (A : Type Δ) → (M : Δ ؛ Γ , `∀ (` Z ⇒ ` Z) , `∀ (` Z ⇒ ` Z) ⊢ A) → (`id₂ ∙ A) · M —↠ (` S Z) ∙ A · ((` S Z) ∙ (A ⇒ A) · (((` S Z) ∙ (`∀ (` Z ⇒ ` Z)) · (` Z)) ∙ A) · M)
-`id₂-∙-· = {!!}
+`id₂-∙-· A M =
+  begin
+    (`id₂ ∙ A) · M
+  —→⟨ ξ-·ₗ β-Λ ⟩
+    _ · M
+  —→⟨ β-ƛ ⟩
+    _
+  ∎
 
 Z↦`id₂ : ∀ {Δ Γ A} → Δ ؛ Γ , `∀ (` Z ⇒ ` Z) ∋ A → Δ ؛ Γ , `∀ (` Z ⇒ ` Z) , `∀ (` Z ⇒ ` Z) ⊢ A
 Z↦`id₂ Z     = `id₂
@@ -202,7 +209,7 @@ ext'-swapCtx (S S x) =
   ≡-Reasoning.∎
 
 exts'-Z↦`id₂ : ∀ {Δ Γ A} → exts' (Z↦`id₂ {Δ = Δ} {Γ = Γ}) {A} ≗ Z↦`id₂
-exts'-Z↦`id₂ Z = cong Λ_ (cong ƛ_ {! !})
+exts'-Z↦`id₂ Z = refl
 exts'-Z↦`id₂ (S x) =
   ≡-Reasoning.begin
     exts' (λ x → ` S S x) x
@@ -218,8 +225,41 @@ exts'-Z↦`id₂ (S x) =
 
 `prequote-[`id₂] : ∀ {Δ Γ A} → (M : Δ ؛ Γ ⊢ A) → subst Z↦`id₂ (`prequote M) —↠ rename swapCtx (`prequote (`prequote M))
 `prequote-[`id₂] (` x) = _ ∎
-`prequote-[`id₂] (ƛ M) = {! !}
-`prequote-[`id₂] (M · N) = {! !}
+
+`prequote-[`id₂] (ƛ M) =
+  begin
+    subst Z↦`id₂ (`prequote (ƛ M))
+  ≡⟨ refl ⟩
+    ƛ subst (exts Z↦`id₂) (rename swapCtx (`prequote M))
+  ≡⟨ sym (cong ƛ_ (subst-∘ (exts Z↦`id₂) swapCtx (`prequote M))) ⟩
+    ƛ subst (exts Z↦`id₂ ∘ swapCtx) (`prequote M)
+  ≡⟨ {!!} ⟩
+    ƛ subst (rename (swapCtx ∘ ext swapCtx) ∘ Z↦`id₂) (`prequote M)
+  ≡⟨ cong ƛ_ {! subst-rename-∘ !} ⟩
+    ƛ rename (swapCtx ∘ ext swapCtx) (subst (Z↦`id₂) (`prequote M))
+  —↠⟨ ƛ-cong {! !} ⟩
+    ƛ rename (swapCtx ∘ ext swapCtx) (rename swapCtx (`prequote (`prequote M)))
+  ≡⟨ {!!} ⟩
+    ƛ rename (ext swapCtx ∘ swapCtx) (`prequote (rename swapCtx (`prequote M)))
+  ≡⟨ cong ƛ_ {! rename-∘ !} ⟩
+    ƛ rename (ext swapCtx) (rename swapCtx (`prequote (rename swapCtx (`prequote M))))
+  ≡⟨ refl ⟩
+    rename swapCtx (`prequote (`prequote (ƛ M)))
+  ∎
+
+`prequote-[`id₂] (_·_ {A = A} {B = B} M N) =
+  begin
+    subst Z↦`id₂ (`prequote (M · N))
+  ≡⟨ refl ⟩
+    (`id₂ ∙ (A ⇒ B) · subst Z↦`id₂ (`prequote M)) · (subst Z↦`id₂ (`prequote N))
+  —↠⟨ ·-congₗ (·-congᵣ (`prequote-[`id₂] M)) ⟩
+    (`id₂ ∙ (A ⇒ B) · rename swapCtx (`prequote (`prequote M))) · (subst Z↦`id₂ (`prequote N))
+  —↠⟨ ·-congᵣ (`prequote-[`id₂] N) ⟩
+    (`id₂ ∙ (A ⇒ B) · rename swapCtx (`prequote (`prequote M))) · rename swapCtx (`prequote (`prequote N))
+  —↠⟨ ·-congₗ (`id₂-∙-· (A ⇒ B) (rename swapCtx (`prequote (`prequote M)))) ⟩
+    rename swapCtx (`prequote (`prequote (M · N)))
+  ∎
+
 `prequote-[`id₂] (Λ M) =
   begin
     Λ subst (exts' Z↦`id₂) (`prequote M)
