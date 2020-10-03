@@ -4,8 +4,11 @@ open import Relation.Binary.PropositionalEquality as P using (_≡_; refl; sym; 
 open import Function
 open import SystemF
 
+`Id : ∀ {Δ} → Type Δ
+`Id = `∀ (` Z ⇒ ` Z)
+
 □_ : ∀ {Δ} → Type Δ → Type Δ
-□ A = (`∀ ((` Z) ⇒ (` Z))) ⇒ A
+□ A = `Id ⇒ A
 
 swapCtx : ∀ {Δ Γ B C} → Rename Δ (Γ , B , C) (Γ , C , B)
 swapCtx Z = S Z
@@ -30,7 +33,7 @@ swapCtx (S S x) = (S S x)
   → Δ ؛ Γ ⊢ □ A
 `quote M = ƛ `prequote M
 
-`id : ∀ {Δ Γ} → Δ ؛ Γ ⊢ `∀ ((` Z) ⇒ (` Z))
+`id : ∀ {Δ Γ} → Δ ؛ Γ ⊢ `Id
 `id = Λ (ƛ ` Z)
 
 `unquote : ∀ {Δ Γ A} → Δ ؛ Γ ⊢ □ A ⇒ A
@@ -47,7 +50,7 @@ swapCtx (S S x) = (S S x)
 -- = (x A (prequote_x M) (prequote_x N)) [x := Λ A. ƛ e. y A (y (A ⇒ A) (y (∀ X. X ⇒ X) x A) e)]
 -- = prequote_x (M N) [x := Λ A. ƛ e. y A (y (A ⇒ A) (y (∀ X. X ⇒ X) x A) e)]
 
-`id₂ : ∀ {Δ Γ} → Δ ؛ Γ , `∀ (` Z ⇒ ` Z) , `∀ (` Z ⇒ ` Z) ⊢ `∀ (` Z ⇒ ` Z)
+`id₂ : ∀ {Δ Γ} → Δ ؛ Γ , `Id , `Id ⊢ `Id
 `id₂ = Λ (ƛ (` S S Z) ∙ ` Z · ((` S S Z) ∙ (` Z ⇒ ` Z) · (((` S S Z) ∙ (`∀ (` Z ⇒ ` Z)) · (` S Z)) ∙ ` Z) · ` Z))
 
 `4 : ∀ {Δ Γ A} → Δ ؛ Γ ⊢ □ A ⇒ □ (□ A)
@@ -180,7 +183,7 @@ normal-`quote M = ″ (ƛ normal-`prequote M)
     M
   ∎
 
-`id₂-∙-· : ∀ {Δ Γ} → (A : Type Δ) → (M : Δ ؛ Γ , `∀ (` Z ⇒ ` Z) , `∀ (` Z ⇒ ` Z) ⊢ A) → (`id₂ ∙ A) · M —↠ (` S Z) ∙ A · ((` S Z) ∙ (A ⇒ A) · (((` S Z) ∙ (`∀ (` Z ⇒ ` Z)) · (` Z)) ∙ A) · M)
+`id₂-∙-· : ∀ {Δ Γ} → (A : Type Δ) → (M : Δ ؛ Γ , `Id , `Id ⊢ A) → (`id₂ ∙ A) · M —↠ (` S Z) ∙ A · ((` S Z) ∙ (A ⇒ A) · (((` S Z) ∙ (`∀ (` Z ⇒ ` Z)) · (` Z)) ∙ A) · M)
 `id₂-∙-· A M =
   begin
     (`id₂ ∙ A) · M
