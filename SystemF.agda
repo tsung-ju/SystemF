@@ -518,7 +518,7 @@ ctxSubst-Z↦ₜ-ctxWeaken {Γ = Γ , _} B (S x) = S ctxSubst-Z↦ₜ-ctxWeaken 
 ⊢-typeRename ρ (` x) = ` ∋-map (typeRename ρ) x
 ⊢-typeRename ρ (ƛ M) = ƛ ⊢-typeRename ρ M
 ⊢-typeRename ρ (M · N) = ⊢-typeRename ρ M · ⊢-typeRename ρ N
-⊢-typeRename {Γ = Γ} ρ (Λ M) = Λ rename (ctxWeaken-ctxRename ρ) (⊢-typeRename (typeExt ρ) M)
+⊢-typeRename ρ (Λ M) = Λ rename (ctxWeaken-ctxRename ρ) (⊢-typeRename (typeExt ρ) M)
 ⊢-typeRename ρ (_∙_ {A = A} M B) rewrite typeRename-[]ₜ ρ A B = ⊢-typeRename ρ M ∙ typeRename ρ B
 
 ⊢-typeSubst
@@ -528,7 +528,7 @@ ctxSubst-Z↦ₜ-ctxWeaken {Γ = Γ , _} B (S x) = S ctxSubst-Z↦ₜ-ctxWeaken 
 ⊢-typeSubst σ (` x) = ` ∋-map (typeSubst σ) x
 ⊢-typeSubst σ (ƛ M) = ƛ ⊢-typeSubst σ M
 ⊢-typeSubst σ (M · N) = ⊢-typeSubst σ M · ⊢-typeSubst σ N
-⊢-typeSubst {Γ = Γ} σ (Λ M) = Λ rename (ctxWeaken-ctxSubst σ) (⊢-typeSubst (typeExts σ) M)
+⊢-typeSubst σ (Λ M) = Λ rename (ctxWeaken-ctxSubst σ) (⊢-typeSubst (typeExts σ) M)
 ⊢-typeSubst σ (_∙_ {A = A} M B) rewrite typeSubst-[]ₜ σ A B = (⊢-typeSubst σ M) ∙ (typeSubst σ B)
 
 exts' : ∀ {Δ Γ Γ'} → Subst Δ Γ Γ' → Subst (Δ ,·) (ctxWeaken Γ) (ctxWeaken Γ')
@@ -550,13 +550,13 @@ _[_] : ∀ {Δ Γ A B}
      → Δ ؛ Γ , A ⊢ B
      → Δ ؛ Γ ⊢ A
      → Δ ؛ Γ ⊢ B
-M [ N ]  = subst (Z↦ N) M
+M [ N ] = subst (Z↦ N) M
 
 _[[_]] : ∀ {Δ Γ A}
      → Δ ,· ؛ ctxWeaken Γ ⊢ A
      → (B : Type Δ)
      → Δ ؛ Γ ⊢ A [ B ]ₜ
-_[[_]] {Γ = Γ} {A = A} M B = rename (ctxSubst-Z↦ₜ-ctxWeaken B) (⊢-typeSubst (Z↦ₜ B) M)
+_[[_]] M B = rename (ctxSubst-Z↦ₜ-ctxWeaken B) (⊢-typeSubst (Z↦ₜ B) M)
 
 -- Properties {{{
 
